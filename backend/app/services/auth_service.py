@@ -31,7 +31,7 @@ class AuthService:
 
         token = create_access_token(
             {
-                "sub": str(user.id),
+                "sub": user.email,
                 "role": user.role.value
             }
         )

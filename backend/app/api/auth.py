@@ -12,8 +12,11 @@ from app.schemas.auth import LoginResponse
 from app.services.auth_service import AuthService
 from app.schemas.user import UserCreate
 from app.schemas.user import UserResponse
-
+from app.auth.permissions import require_roles
 from app.services.user_service import UserService
+from fastapi import APIRouter, Depends
+from app.auth.dependencies import get_current_user
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(
     prefix="/auth",
@@ -61,7 +64,7 @@ def register(
     response_model=LoginResponse
 )
 def login(
-    request: LoginRequest,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
 
@@ -70,8 +73,8 @@ def login(
     service = AuthService(repository)
 
     token = service.login(
-        request.email,
-        request.password
+        form_data.username,
+        form_data.password
     )
 
     if not token:
@@ -84,3 +87,19 @@ def login(
     return LoginResponse(
         access_token=token
     )
+@router.get("/me")
+def get_logged_in_user(current_user=Depends(get_current_user)):
+    return {
+        "id": str(current_user.id),
+        "name": current_user.full_name,
+        "email": current_user.email,
+        "role": current_user.role.value
+    }
+
+@router.get("/admin")
+def admin_dashboard(
+    current_user=Depends(require_roles("ADMIN"))
+):
+    return {
+        "message": "Welcome Admin!"
+    }
