@@ -41,7 +41,7 @@ class User(Base):
     role = Column(
         Enum(UserRole),
         nullable=False,
-        default=UserRole.QA_EXECUTIVE
+        #default=UserRole.QA_EXECUTIVE
     )
 
     is_active = Column(

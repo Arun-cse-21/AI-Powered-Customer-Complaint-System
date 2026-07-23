@@ -5,6 +5,7 @@ class UserRole(str, Enum):
     ADMIN = "ADMIN"
     QA_MANAGER = "QA_MANAGER"
     QA_EXECUTIVE = "QA_EXECUTIVE"
+    CUSTOMER = "CUSTOMER"
 
 
 class ComplaintStatus(str, Enum):
